@@ -26,6 +26,22 @@
             <label for="file" class="custom-file-label">Choose File</label>
           </div>
           <input type="submit" value="Submit" class="btn btn-primary btn-block">
+        </form>
+         <hr>
+        <% if(files){ %>
+          <% files.forEach(function(file) { %>
+            <div class="card card-body mb-3">
+             
+                  <%= file.filename %>
+                    
+                      <form method="POST" action="/files/<%= file._id %>?_method=DELETE">
+                        <button class="btn btn-danger btn-block mt-4">Delete</button>
+                      </form>
+            </div>
+            <% }) %>
+              <% } else { %>
+                <p>No files to show</p>
+                <% } %>
       </div>
     </div>
   </div>
