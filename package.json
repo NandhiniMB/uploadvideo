@@ -22,6 +22,7 @@
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
     "connect-flash": "^0.1.1",
+    "cookie-parser": "^1.4.5",
     "ejs": "^3.0.1",
     "express": "^4.17.1",
     "express-messages": "^1.0.1",
@@ -35,7 +36,8 @@
     "nodemailer": "^6.4.6",
     "nodemailer-sendgrid-transport": "^0.2.0",
     "passport": "^0.4.1",
-    "passport-local": "^1.0.0"
+    "passport-local": "^1.0.0",
+    "req-flash": "0.0.3"
   },
   "devDependencies": {
     "nodemon": "^2.0.2"

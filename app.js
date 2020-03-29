@@ -7,11 +7,16 @@ const multer =require('multer');
 const GridFsStorage = require('multer-gridfs-storage');
 const Grid= require('gridfs-stream');
 const methodOverride = require('method-override');
-const flash = require('connect-flash');
+//const flash = require('connect-flash');
 //const {check,validationResult} = require('express-validator');
 const expressValidator = require('express-validator');
 const session = require('express-session');
+const cookieParser = require('cookie-parser');
+const flash = require('req-flash');
+
 const app = express();
+const passport = require('passport');
+const config = require('./config/database');
 
 //Middleware
 
@@ -24,8 +29,9 @@ app.use(expressValidator())
 app.use(methodOverride('_method'));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine','ejs')
+app.use(bodyParser());
 //Mongo URI
-const mongoURI = 'mongodb://127.0.0.1:27017/mongouploads';
+const mongoURI = config.database;
 //Create connection
 const conn= mongoose.createConnection(mongoURI);
 let gfs;
@@ -63,91 +69,25 @@ const storage = new GridFsStorage({
 const upload = multer({ storage })
 
 
-
+app.use(cookieParser());
 app.use(session({
   secret: 'keyboard cat',
-  resave: true,
+  resave: false,
   saveUninitialized: true
 }));
+app.use(flash());
 
 
+require('./config/passport')(passport);
+// Passport Middleware
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.post('/upload', upload.single('file'), (req, res) => {
   //res.json({ file: req.file });
   res.redirect('/');
 });
 
-
-// app.get('/login',function(req,res){
-//     res.render('login');
-//   });
-
-
-
-// app.post('/login', [
-//   check('email', 'email is required').isEmail(),
-//   check('password', 'password is required').not().isEmpty(),
-//   ], function(req, res, next) {
-//   //check validate data
-
-//   const result= validationResult(req);
-//   var errors = result.errors;
-//   for (var key in errors) {
-//         console.log(errors[key].value);
-//   }
-//   if (!result.isEmpty()) {
-//      res.render('login', {
-//       errors: errors
-//     });
-//  }
-  // else{
-  //   var email =req.body.email; 
-  //   var pass = req.body.password; 
-
-  //   conn.collection('signup').find({
-  //       "email": email,"password":pass
-  //   }).toArray((err,result)=>{
-  //   if(!result || result.length == 0){
-		// 	return res.status(404).json({
-		// 		err:'No user Exist'
-		// 	});
-		// }
-    
-  //   else
-  //    {
-  //    	res.redirect('/');
-  //    }
-  //   });
-  //   }
-  // res.redirect('/');	
-  // });
-   
-
-
-// app.get('/signup',function(req,res){
-//     res.render('signup');
-//   });
-
-
-// app.post('/signup', function(req,res){ 
-//     // var name = req.body.name;
-//     //console.log(req.body.email) 
-//     var email =req.body.email; 
-//     var pass = req.body.password; 
-//     // var phone =req.body.phone; 
-  
-//     var data = { 
-//         "email":email, 
-//         "password":pass, 
-//     } 
-
-// conn.collection('signup').insertOne(data,function(err, collection){ 
-//         if (err) throw err; 
-//         console.log("Record inserted Successfully"); 
-              
-//     });         
-//     return res.redirect('login'); 
-// });
 
 app.get('/',(req,res) => {
     var query_video={contentType : 'video/mp4'};
@@ -170,6 +110,15 @@ app.use(function (req, res, next) {
   res.locals.messages = require('express-messages')(req, res);
   next();
 });	
+
+
+// app.get('/*', function(req, res, next){
+//   res.session.flash = [];
+//   next();
+// });
+
+
+
 // @route GET /files
 app.get('/files',(req,res)=>{
 	gfs.files.find().toArray((err,files)=>{

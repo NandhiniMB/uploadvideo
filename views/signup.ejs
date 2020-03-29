@@ -14,7 +14,13 @@
 
     <h1><span class="fa fa-sign-in"></span> Signup</h1>
 
-    <%- messages() %>
+    <% if (locals.errors) { %>
+    <% errors.forEach(function(errors) { %>
+            <p>
+                <%= errors.msg %>
+            </p>
+        <% }); %>
+     <% } %>
 
     <!-- LOGIN FORM -->
     <form action="/users/signup" method="post">
@@ -40,7 +46,7 @@
 
     <hr>
 
-    <p>Already have an account? <a href="/login">Login</a></p>
+    <p>Already have an account? <a href="/users/login">Login</a></p>
    
 
 </div>
